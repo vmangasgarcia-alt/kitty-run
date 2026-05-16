@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none, viewport-fit=cover">
-    <title>Hello Kitty Run - Mobile Edition</title>
+    <title>Hello Kitty Run - Shop Edition</title>
     <style>
-        /* Forzar que el cuerpo ocupe toda la pantalla y no tenga barras de scroll */
         html, body {
             width: 100%;
             height: 100%;
@@ -22,14 +21,9 @@
             justify-content: center;
         }
 
-        /* Si el móvil está en vertical, avisamos al usuario de que lo gire */
         @media screen and (orientation: portrait) {
-            #orientationWarning {
-                display: flex !important;
-            }
-            #gameWrapper {
-                display: none !important;
-            }
+            #orientationWarning { display: flex !important; }
+            #gameWrapper { display: none !important; }
         }
 
         #orientationWarning {
@@ -47,9 +41,6 @@
             box-sizing: border-box;
         }
 
-        #orientationWarning h2 { margin-bottom: 10px; }
-
-        /* Contenedor adaptativo para que en pantallas horizontales use el ratio correcto */
         #gameWrapper {
             display: flex;
             flex-direction: column;
@@ -69,23 +60,24 @@
             width: 100%;
             justify-content: space-between;
             align-items: center;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #d81b60;
             margin-bottom: 5px;
             z-index: 5;
         }
 
-        #menuBtn {
+        .top-btn {
             background-color: #f06292;
             color: white;
             border: 2px solid #d81b60;
             border-radius: 5px;
-            padding: 2px 12px;
-            font-size: 14px;
+            padding: 2px 10px;
+            font-size: 13px;
             cursor: pointer;
             font-family: 'Courier New', Courier, monospace;
             font-weight: bold;
+            margin: 0 2px;
         }
 
         #gameContainer {
@@ -131,7 +123,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(252, 228, 236, 0.95);
+            background-color: rgba(252, 228, 236, 0.96);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -139,26 +131,26 @@
             border-radius: 10px;
             z-index: 20;
             box-sizing: border-box;
-            padding: 20px;
+            padding: 15px;
         }
 
         .overlay-screen h2 {
             color: #d81b60;
-            margin: 0 0 15px 0;
-            font-size: 22px;
+            margin: 0 0 10px 0;
+            font-size: 20px;
         }
 
         .overlay-screen input {
-            padding: 10px;
-            font-size: 16px;
+            padding: 8px;
+            font-size: 15px;
             border: 2px solid #f48fb1;
             border-radius: 5px;
             text-align: center;
             outline: none;
             font-family: 'Courier New', Courier, monospace;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             width: 60%;
-            max-width: 250px;
+            max-width: 220px;
         }
 
         .btn-visible {
@@ -169,17 +161,79 @@
             left: auto;
             margin: 5px;
         }
+
+        /* DISEÑO DE LA TIENDA */
+        .shop-container {
+            display: flex;
+            width: 95%;
+            justify-content: space-around;
+            margin-bottom: 10px;
+        }
+
+        .shop-item {
+            background: white;
+            border: 2px solid #f48fb1;
+            border-radius: 8px;
+            padding: 6px;
+            width: 28%;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .shop-item span { font-size: 28px; display: block; margin-bottom: 2px; }
+        .shop-item p { margin: 2px 0; font-size: 12px; font-weight: bold; color: #ad1457; }
+        
+        .shop-btn {
+            background-color: #f48fb1;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            width: 90%;
+        }
+        .shop-btn.owned { background-color: #ba68c8; }
+        .shop-btn.active { background-color: #4db6ac; }
+
+        .bow-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 2px solid #f48fb1;
+            border-radius: 8px;
+            padding: 6px;
+            width: 90%;
+            margin-bottom: 10px;
+        }
+
+        .color-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 5px;
+            margin: 0 6px;
+            cursor: pointer;
+            border: 2px solid #ccc;
+            box-sizing: border-box;
+        }
+        .color-dot.active { border-color: #d81b60; transform: scale(1.1); }
         
         #leaderboardList {
-            font-size: 16px;
+            font-size: 15px;
             color: #ad1457;
             text-align: left;
             width: 70%;
             max-height: 130px;
             overflow-y: auto;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
-
         #leaderboardList li {
             margin-bottom: 4px;
             border-bottom: 1px dashed #f48fb1;
@@ -198,20 +252,56 @@
     <div id="gameWrapper">
         <div class="score-board">
             <div>RÉCORD: <span id="highScore">0</span></div>
-            <div><button id="menuBtn">🏠 Menú</button></div>
-            <div>PUNTOS: <span id="score">0</span></div>
+            <div>
+                <button id="menuBtn" class="top-btn">🏠 Menú</button>
+                <button id="openShopBtn" class="top-btn" style="background-color: #ba68c8; border-color: #8e24aa;">🛒 Tienda</button>
+            </div>
+            <div>💰<span id="coinsDisplay">0</span> | PTS: <span id="score">0</span></div>
         </div>
 
         <div id="gameContainer">
             <canvas id="gameCanvas" width="800" height="300"></canvas>
             
             <div id="startScreen" class="overlay-screen">
-                <h2>¡Identifícate para jugar!</h2>
+                <h2>🎀 Hello Kitty Run 🎀</h2>
                 <input type="text" id="playerName" placeholder="Tu nombre..." maxlength="12">
                 <div style="display: flex;">
                     <button id="startBtn" class="game-btn btn-visible">Jugar</button>
                     <button id="showLeaderboardBtn" class="game-btn btn-visible" style="background-color: #ba68c8;">Ver Ranking</button>
                 </div>
+            </div>
+
+            <div id="shopScreen" class="overlay-screen" style="display: none;">
+                <h2>✨ Tienda Sanrio ✨ (💰<span id="shopCoins">0</span>)</h2>
+                
+                <div class="shop-container">
+                    <div class="shop-item">
+                        <span>🐶</span>
+                        <p>Cinnamoroll</p>
+                        <button id="skin1-btn" class="shop-btn">💰150</button>
+                    </div>
+                    <div class="shop-item">
+                        <span>😈</span>
+                        <p>Kuromi</p>
+                        <button id="skin2-btn" class="shop-btn">💰300</button>
+                    </div>
+                    <div class="shop-item">
+                        <span>👑</span>
+                        <p>Reina Kitty</p>
+                        <button id="skin3-btn" class="shop-btn">💰500</button>
+                    </div>
+                </div>
+
+                <div class="bow-section">
+                    <p style="margin:0 10px 0 0; font-size:12px; font-weight:bold; color:#ad1457;">🎨 Lazos (💰50):</p>
+                    <div class="color-dot" id="dot-red" style="background-color: #ff1744;"></div>
+                    <div class="color-dot" id="dot-purple" style="background-color: #ba68c8;"></div>
+                    <div class="color-dot" id="dot-blue" style="background-color: #29b6f6;"></div>
+                    <div class="color-dot" id="dot-yellow" style="background-color: #fdd835;"></div>
+                    <div class="color-dot" id="dot-green" style="background-color: #66bb6a;"></div>
+                </div>
+
+                <button id="closeShopBtn" class="game-btn btn-visible" style="padding: 6px 20px; font-size:14px;">Salir</button>
             </div>
 
             <div id="leaderboardScreen" class="overlay-screen" style="display: none;">
@@ -245,28 +335,40 @@
         const ctx = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
         const highScoreElement = document.getElementById('highScore');
+        const coinsDisplay = document.getElementById('coinsDisplay');
+        const shopCoins = document.getElementById('shopCoins');
         
         const restartBtn = document.getElementById('restartBtn');
         const continueBtn = document.getElementById('continueBtn');
         const startScreen = document.getElementById('startScreen');
         const startBtn = document.getElementById('startBtn');
         const menuBtn = document.getElementById('menuBtn');
+        const openShopBtn = document.getElementById('openShopBtn');
+        const shopScreen = document.getElementById('shopScreen');
+        const closeShopBtn = document.getElementById('closeShopBtn');
         const showLeaderboardBtn = document.getElementById('showLeaderboardBtn');
         const leaderboardScreen = document.getElementById('leaderboardScreen');
         const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
         const playerNameInput = document.getElementById('playerName');
         const leaderboardList = document.getElementById('leaderboardList');
 
-        // Variables de lógica de juego equilibradas para movilidad fluida
+        // LÓGICA DE MONEDAS Y TIENDA (Guardado local persistente)
+        let totalCoins = parseInt(localStorage.getItem('kittyCoins')) || 0;
+        let ownedSkins = JSON.parse(localStorage.getItem('kittyOwnedSkins')) || ['default'];
+        let activeSkin = localStorage.getItem('kittyActiveSkin') || 'default';
+        let ownedBows = JSON.parse(localStorage.getItem('kittyOwnedBows')) || ['#ff1744']; // El rojo viene gratis
+        let activeBowColor = localStorage.getItem('kittyActiveBow') || '#ff1744';
+
+        coinsDisplay.innerText = totalCoins;
+
         let playerName = "Anónimo";
         let score = 0;
         let highScore = localStorage.getItem('kittyHighScore') || 0;
         highScoreElement.innerText = highScore;
         
-        // Físicas ajustadas para velocidad ágil de inicio
         let baseSpeed = 5.5; 
         let gameSpeed = baseSpeed; 
-        let scoreSpeed = 0.015; // Velocidad base a la que suben los puntos
+        let scoreSpeed = 0.015; 
         
         let gameOver = false;
         let juegoPausado = true; 
@@ -274,6 +376,9 @@
         const groundHeight = 250;
         let framesSinceLastObstacle = 0;
         let lastLevel = 0;
+
+        // Diccionario visual de Skins
+        const skinEmojis = { 'default': '🐱', 'skin1': '🐶', 'skin2': '😈', 'skin3': '👑' };
 
         async function guardarEnRanking(puntos) {
             try {
@@ -313,9 +418,13 @@
 
             dibujar: function() {
                 ctx.font = '45px Arial';
-                ctx.fillText('🐱', this.x, this.y + 40);
-                ctx.font = '20px Arial';
-                ctx.fillText('🎀', this.x + 25, this.y + 15);
+                // Dibuja el emoji activo de la skin elegida
+                ctx.fillText(skinEmojis[activeSkin] || '🐱', this.x, this.y + 40);
+                
+                // Dibuja el lazo personalizado con el color actual
+                ctx.fillStyle = activeBowColor;
+                ctx.font = 'bold 18px Arial';
+                ctx.fillText('🎀', this.x + 26, this.y + 14);
             },
             actualizarFisicas: function() {
                 this.dy += this.gravity; 
@@ -336,7 +445,6 @@
                 this.type = type; 
                 this.x = canvas.width;
                 this.width = 30; 
-                
                 if (this.type === 'tree') {
                     this.height = 40;
                     this.y = groundHeight - this.height;
@@ -351,15 +459,11 @@
                 ctx.font = '45px Arial';
                 ctx.fillText(this.emoji, this.x, this.y + 35);
             }
-            update() {
-                this.x -= gameSpeed;
-            }
+            update() { this.x -= gameSpeed; }
         }
 
         function handleObstacles() {
             framesSinceLastObstacle++;
-            
-            // Separación dinámica: a mayor velocidad, requiere mayor separación en píxeles
             let spawnInterval = Math.max(70, 110 - (gameSpeed - baseSpeed) * 8);
 
             if (framesSinceLastObstacle > spawnInterval && Math.random() < 0.03) {
@@ -373,15 +477,13 @@
                 obs.update();
                 obs.draw();
 
-                let padding = 8; // Margen de colisión justo
+                let padding = 8;
                 if (
                     kitty.x + padding < obs.x + obs.width &&
                     kitty.x + kitty.width - padding > obs.x &&
                     kitty.y + padding < obs.y + obs.height &&
                     kitty.y + kitty.height - padding > obs.y
-                ) {
-                    gameOver = true;
-                }
+                ) { gameOver = true; }
 
                 if (obs.x + obs.width < 0) {
                     obstacles.splice(i, 1);
@@ -391,28 +493,25 @@
         }
 
         function saltar() {
-            if (kitty.grounded && !gameOver && !juegoPausado && startScreen.style.display === 'none' && leaderboardScreen.style.display === 'none') {
+            if (kitty.grounded && !gameOver && !juegoPausado && startScreen.style.display === 'none' && leaderboardScreen.style.display === 'none' && shopScreen.style.display === 'none') {
                 kitty.dy = kitty.jumpPower;
                 kitty.grounded = false;
             }
         }
 
-        // Controles unificados e instantáneos
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.key === ' ') {
-                if(startScreen.style.display === 'none') e.preventDefault();
+                if(startScreen.style.display === 'none' && shopScreen.style.display === 'none') e.preventDefault();
                 saltar();
             }
         });
 
-        // Eventos de toque de pantalla optimizados para no causar lag táctil
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             saltar();
         }, { passive: false });
         canvas.addEventListener('mousedown', saltar);
 
-        // BUCLE PRINCIPAL DE ANIMACIÓN
         function animar() {
             if (juegoPausado) return;
 
@@ -427,26 +526,34 @@
                 restartBtn.style.display = 'block';
                 
                 let puntosFinales = Math.floor(score);
+                
+                // CÁLCULO DE RECOMPENSA: 10 puntos = 1 moneda
+                if(puntosFinales > 0) {
+                    let monedasGanadas = Math.floor(puntosFinales / 10);
+                    if(monedasGanadas > 0) {
+                        totalCoins += monedasGanadas;
+                        localStorage.setItem('kittyCoins', totalCoins);
+                        coinsDisplay.innerText = totalCoins;
+                    }
+                    guardarEnRanking(puntosFinales);
+                }
+
                 if (puntosFinales > highScore) {
                     highScore = puntosFinales;
                     localStorage.setItem('kittyHighScore', highScore);
                     highScoreElement.innerText = highScore;
                 }
-                if(puntosFinales > 0) guardarEnRanking(puntosFinales);
                 return;
             }
 
-            // SISTEMA DINÁMICO DE DIFICULTAD CADA 100 PUNTOS (Tipo Google Dino)
             let puntosActuales = Math.floor(score);
             let currentLevel = Math.floor(puntosActuales / 100);
-            
             if (currentLevel > lastLevel) {
                 lastLevel = currentLevel;
-                gameSpeed = baseSpeed * Math.pow(1.15, lastLevel); // Sube la velocidad un 15% por nivel
-                scoreSpeed = 0.015 * Math.pow(1.15, lastLevel);   // Los puntos suben proporcionalmente más rápido
+                gameSpeed = baseSpeed * Math.pow(1.15, lastLevel); 
+                scoreSpeed = 0.015 * Math.pow(1.15, lastLevel);   
             }
 
-            // Logro a los 100 puntos exactos en el nivel 1
             if (score >= 100 && !milestoneReached) {
                 milestoneReached = true;
                 juegoPausado = true;
@@ -468,7 +575,6 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Suelo
             ctx.beginPath();
             ctx.moveTo(0, groundHeight);
             ctx.lineTo(canvas.width, groundHeight);
@@ -486,12 +592,110 @@
             requestAnimationFrame(animar);
         }
 
-        // --- BOTONES ---
+        // --- SISTEMA INTERNO DE LA TIENDA ---
+        function actualizarVisualTienda() {
+            shopCoins.innerText = totalCoins;
+            coinsDisplay.innerText = totalCoins;
+
+            setupSkinButton('skin1', 'skin1-btn', 150);
+            setupSkinButton('skin2', 'skin2-btn', 300);
+            setupSkinButton('skin3', 'skin3-btn', 500);
+
+            setupBowDot('#ff1744', 'dot-red');
+            setupBowDot('#ba68c8', 'dot-purple');
+            setupBowDot('#29b6f6', 'dot-blue');
+            setupBowDot('#fdd835', 'dot-yellow');
+            setupBowDot('#66bb6a', 'dot-green');
+        }
+
+        function setupSkinButton(skinId, buttonId, price) {
+            const btn = document.getElementById(buttonId);
+            if (activeSkin === skinId) {
+                btn.innerText = "Equipado";
+                btn.className = "shop-btn active";
+            } else if (ownedSkins.includes(skinId)) {
+                btn.innerText = "Equipar";
+                btn.className = "shop-btn owned";
+            } else {
+                btn.innerText = "💰" + price;
+                btn.className = "shop-btn";
+            }
+        }
+
+        function setupBowDot(colorHex, dotId) {
+            const dot = document.getElementById(dotId);
+            dot.className = "color-dot" + (activeBowColor === colorHex ? " active" : "");
+        }
+
+        function manejarCompraSkin(skinId, price) {
+            if (ownedSkins.includes(skinId)) {
+                activeSkin = skinId;
+                localStorage.setItem('kittyActiveSkin', activeSkin);
+            } else if (totalCoins >= price) {
+                totalCoins -= price;
+                ownedSkins.push(skinId);
+                activeSkin = skinId;
+                localStorage.setItem('kittyCoins', totalCoins);
+                localStorage.setItem('kittyOwnedSkins', JSON.stringify(ownedSkins));
+                localStorage.setItem('kittyActiveSkin', activeSkin);
+            } else {
+                alert("¡No tienes suficientes monedas! Sigue corriendo para ganar más.");
+            }
+            actualizarVisualTienda();
+            redibujarFondoEstatico();
+        }
+
+        function manejarCompraLazo(colorHex) {
+            if (ownedBows.includes(colorHex)) {
+                activeBowColor = colorHex;
+                localStorage.setItem('kittyActiveBow', activeBowColor);
+            } else if (totalCoins >= 50) {
+                totalCoins -= 50;
+                ownedBows.push(colorHex);
+                activeBowColor = colorHex;
+                localStorage.setItem('kittyCoins', totalCoins);
+                localStorage.setItem('kittyOwnedBows', JSON.stringify(ownedBows));
+                localStorage.setItem('kittyActiveBow', activeBowColor);
+            } else {
+                alert("¡Necesitas 50 monedas para desbloquear este color de lazo!");
+            }
+            actualizarVisualTienda();
+            redibujarFondoEstatico();
+        }
+
+        // Registrar Eventos de Click de la Tienda
+        document.getElementById('skin1-btn').addEventListener('click', () => manejarCompraSkin('skin1', 150));
+        document.getElementById('skin2-btn').addEventListener('click', () => manejarCompraSkin('skin2', 300));
+        document.getElementById('skin3-btn').addEventListener('click', () => manejarCompraSkin('skin3', 500));
+        
+        document.getElementById('dot-red').addEventListener('click', () => manejarCompraLazo('#ff1744'));
+        document.getElementById('dot-purple').addEventListener('click', () => manejarCompraLazo('#ba68c8'));
+        document.getElementById('dot-blue').addEventListener('click', () => manejarCompraLazo('#29b6f6'));
+        document.getElementById('dot-yellow').addEventListener('click', () => manejarCompraLazo('#fdd835'));
+        document.getElementById('dot-green').addEventListener('click', () => manejarCompraLazo('#66bb6a'));
+
+        // --- BOTONES DE MENÚ Y NAVEGACIÓN ---
+        openShopBtn.addEventListener('click', () => {
+            juegoPausado = true;
+            startScreen.style.display = 'none';
+            leaderboardScreen.style.display = 'none';
+            restartBtn.style.display = 'none';
+            continueBtn.style.display = 'none';
+            shopScreen.style.display = 'flex';
+            actualizarVisualTienda();
+        });
+
+        closeShopBtn.addEventListener('click', () => {
+            shopScreen.style.display = 'none';
+            startScreen.style.display = 'flex';
+        });
+
         menuBtn.addEventListener('click', () => {
             juegoPausado = true; 
             restartBtn.style.display = 'none';
             continueBtn.style.display = 'none';
             leaderboardScreen.style.display = 'none';
+            shopScreen.style.display = 'none';
             startScreen.style.display = 'flex';
         });
 
@@ -546,14 +750,18 @@
             startScreen.style.display = 'flex';
         });
 
-        // Renderizado estático inicial de fondo
-        ctx.beginPath();
-        ctx.moveTo(0, groundHeight);
-        ctx.lineTo(canvas.width, groundHeight);
-        ctx.strokeStyle = '#f48fb1';
-        ctx.lineWidth = 4;
-        ctx.stroke();
-        kitty.dibujar();
+        function redibujarFondoEstatico() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.moveTo(0, groundHeight);
+            ctx.lineTo(canvas.width, groundHeight);
+            ctx.strokeStyle = '#f48fb1';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            kitty.dibujar();
+        }
+        
+        redibujarFondoEstatico();
     </script>
 </body>
 </html>
