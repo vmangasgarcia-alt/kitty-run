@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none, viewport-fit=cover">
-    <title>Hello Kitty Run - LoL Edition</title>
+    <title>Hello Kitty Run - Balanced Hardcore</title>
     <style>
         html, body {
             width: 100%;
@@ -136,7 +136,7 @@
 
         .overlay-screen h2 {
             color: #d81b60;
-            margin: 0 0 8px 0;
+            margin: 0 0 10px 0;
             font-size: 20px;
         }
 
@@ -148,7 +148,7 @@
             text-align: center;
             outline: none;
             font-family: 'Courier New', Courier, monospace;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             width: 60%;
             max-width: 220px;
         }
@@ -162,7 +162,6 @@
             margin: 4px;
         }
 
-        /* DISEÑO COMPACTO TIENDA Y LOGROS */
         .shop-container, .achievements-grid {
             display: flex;
             width: 95%;
@@ -222,7 +221,6 @@
         }
         .color-dot.active { border-color: #d81b60; transform: scale(1.1); }
 
-        /* REJILLA DE MEDALLAS */
         .achievements-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -242,12 +240,12 @@
             border-radius: 5px;
             background: #fff5f8;
             border: 1px solid #ffccd8;
-            filter: grayscale(1); /* Bloqueado por defecto */
-            opacity: 0.5;
+            filter: grayscale(1);
+            opacity: 0.4;
         }
 
         .medal-item.unlocked {
-            filter: grayscale(0); /* Desbloqueado */
+            filter: grayscale(0);
             opacity: 1;
             border-color: #f48fb1;
             background: #fff;
@@ -295,9 +293,10 @@
             <div id="startScreen" class="overlay-screen">
                 <h2>🎀 Hello Kitty Run 🎀</h2>
                 <input type="text" id="playerName" placeholder="Tu nombre..." maxlength="12">
-                <div style="display: flex;">
+                <div style="display: flex; gap: 4px;">
                     <button id="startBtn" class="game-btn btn-visible">Jugar</button>
-                    <button id="showLeaderboardBtn" class="game-btn btn-visible" style="background-color: #ba68c8;">Ver Ranking</button>
+                    <button id="showLeaderboardBtn" class="game-btn btn-visible" style="background-color: #ba68c8;">Ranking</button>
+                    <button id="showMedalsMenuBtn" class="game-btn btn-visible" style="background-color: #ffb300;">Logros</button>
                 </div>
             </div>
 
@@ -389,6 +388,7 @@
         const shopScreen = document.getElementById('shopScreen');
         const closeShopBtn = document.getElementById('closeShopBtn');
         const openMedalsBtn = document.getElementById('openMedalsBtn');
+        const showMedalsMenuBtn = document.getElementById('showMedalsMenuBtn');
         const medalsScreen = document.getElementById('medalsScreen');
         const closeMedalsBtn = document.getElementById('closeMedalsBtn');
         const showLeaderboardBtn = document.getElementById('showLeaderboardBtn');
@@ -410,11 +410,11 @@
         let highScore = localStorage.getItem('kittyHighScore') || 0;
         highScoreElement.innerText = highScore;
         
-        // VELOCIDADES ULTRA ACELERADAS DE MODO HARDCORE SOLICITADAS
-        let baseSpeed = 10.0;            // ¡Arranca disparado a 10! (Antes 7.2)
-        let maxSpeed = 30.0;             // ¡Techo brutal fijado en 30! (Antes 14)
+        // CONFIGURACIÓN DE VELOCIDAD EQUILIBRADA HARDCORE
+        let baseSpeed = 10.0;            
+        let maxSpeed = 30.0;             
         let gameSpeed = baseSpeed; 
-        let baseScoreSpeed = 0.08;       // Puntos suben aún más rápido a la par
+        let baseScoreSpeed = 0.04;       // ¡Bajado a la mitad! (Antes 0.08)
         let scoreSpeed = baseScoreSpeed; 
         
         let gameOver = false;
@@ -423,6 +423,8 @@
         const groundHeight = 250;
         let framesSinceLastObstacle = 0;
         let lastLevel = 0;
+
+        const skinEmojis = { 'default': '🐱', 'skin1': '🐶', 'skin2': '😈', 'skin3': '👑' };
 
         async function guardarEnRanking(puntos) {
             try {
@@ -450,58 +452,65 @@
             } catch (e) { leaderboardList.innerHTML = "Error al cargar la tabla."; }
         }
 
-        // --- SISTEMA DE DIBUJO DE SKINS PREMIUM MEJORADAS ---
         function renderPersonaje(targetCtx, x, y, skin, bowColor) {
             targetCtx.save();
-            if(skin === 'skin2') {
-                targetCtx.filter = "brightness(0.25) contrast(1.2)"; // Cuerpo oscuro Kuromi
-            }
-            targetCtx.font = '45px Arial';
-            targetCtx.fillText('🐱', x, y + 40);
-            targetCtx.restore();
-
+            
             if (skin === 'skin1') {
-                // Orejas caídas Cinnamoroll 🐶
                 targetCtx.fillStyle = '#ffffff';
-                targetCtx.strokeStyle = '#e0e0e0';
-                targetCtx.lineWidth = 1.5;
-                targetCtx.beginPath(); targetCtx.ellipse(x + 2, y + 25, 6, 12, Math.PI / 6, 0, 2 * Math.PI); targetCtx.fill(); targetCtx.stroke();
-                targetCtx.beginPath(); targetCtx.ellipse(x + 32, y + 25, 6, 12, -Math.PI / 6, 0, 2 * Math.PI); targetCtx.fill(); targetCtx.stroke();
-            } else if (skin === 'skin2') {
-                // Cuernos y Cola de Demonio Kuromi 😈
-                targetCtx.fillStyle = '#1a1a1a';
-                targetCtx.beginPath(); targetCtx.moveTo(x + 8, y + 10); targetCtx.lineTo(x, y - 2); targetCtx.lineTo(x + 15, y + 8); targetCtx.fill();
-                targetCtx.beginPath(); targetCtx.moveTo(x + 26, y + 8); targetCtx.lineTo(x + 34, y - 2); targetCtx.lineTo(x + 26, y + 10); targetCtx.fill();
+                targetCtx.strokeStyle = '#f48fb1';
+                targetCtx.lineWidth = 2;
                 
-                // Cola de demonio puntiaguda detrás
-                targetCtx.strokeStyle = '#1a1a1a';
-                targetCtx.lineWidth = 2.5;
                 targetCtx.beginPath();
-                targetCtx.moveTo(x + 2, y + 36);
-                targetCtx.quadraticCurveTo(x - 12, y + 28, x - 10, y + 20);
-                targetCtx.stroke();
-                // Punta de flecha de la cola
-                targetCtx.fillStyle = '#1a1a1a';
-                targetCtx.beginPath(); targetCtx.moveTo(x - 10, y + 20); targetCtx.lineTo(x - 15, y + 22); targetCtx.lineTo(x - 8, y + 15); targetCtx.closePath(); targetCtx.fill();
+                targetCtx.arc(x + 18, y + 26, 15, 0, 2 * Math.PI);
+                targetCtx.fill(); targetCtx.stroke();
+                
+                targetCtx.beginPath(); targetCtx.ellipse(x + 1, y + 27, 5, 12, Math.PI / 12, 0, 2 * Math.PI); targetCtx.fill(); targetCtx.stroke();
+                targetCtx.beginPath(); targetCtx.ellipse(x + 35, y + 27, 5, 12, -Math.PI / 12, 0, 2 * Math.PI); targetCtx.fill(); targetCtx.stroke();
+                
+                targetCtx.fillStyle = '#29b6f6';
+                targetCtx.beginPath(); targetCtx.arc(x + 12, y + 24, 2, 0, 2 * Math.PI); targetCtx.fill();
+                targetCtx.beginPath(); targetCtx.arc(x + 24, y + 24, 2, 0, 2 * Math.PI); targetCtx.fill();
+                targetCtx.fillStyle = '#fdd835';
+                targetCtx.beginPath(); targetCtx.arc(x + 18, y + 28, 2.5, 0, 2 * Math.PI); targetCtx.fill();
 
-                targetCtx.fillStyle = '#ff4081';
-                targetCtx.font = '10px Arial';
-                targetCtx.fillText('💀', x + 12, y + 18);
-            } else if (skin === 'skin3') {
-                // Corona de Oro Reina Kitty 👑
-                targetCtx.fillStyle = '#ffd700'; targetCtx.strokeStyle = '#ffb300'; targetCtx.lineWidth = 1;
-                targetCtx.beginPath();
-                targetCtx.moveTo(x + 8, y + 6); targetCtx.lineTo(x + 5, y - 5); targetCtx.lineTo(x + 17, y); targetCtx.lineTo(x + 17, y - 9); targetCtx.lineTo(x + 17, y); targetCtx.lineTo(x + 29, y - 5); targetCtx.lineTo(x + 26, y + 6);
-                targetCtx.closePath(); targetCtx.fill(); targetCtx.stroke();
-                targetCtx.fillStyle = '#d50000';
-                targetCtx.beginPath(); targetCtx.arc(x + 5, y - 5, 1.5, 0, 2 * Math.PI); targetCtx.fill();
-                targetCtx.beginPath(); targetCtx.arc(x + 17, y - 9, 1.5, 0, 2 * Math.PI); targetCtx.fill();
-                targetCtx.beginPath(); targetCtx.arc(x + 29, y - 5, 1.5, 0, 2 * Math.PI); targetCtx.fill();
+            } else {
+                if(skin === 'skin2') {
+                    targetCtx.filter = "brightness(0.25) contrast(1.2)"; 
+                }
+                targetCtx.font = '45px Arial';
+                targetCtx.fillText('🐱', x, y + 40);
+                targetCtx.restore();
+
+                if (skin === 'skin2') {
+                    targetCtx.fillStyle = '#1a1a1a';
+                    targetCtx.beginPath(); targetCtx.moveTo(x + 8, y + 10); targetCtx.lineTo(x - 1, y - 4); targetCtx.lineTo(x + 15, y + 8); targetCtx.fill();
+                    targetCtx.beginPath(); targetCtx.moveTo(x + 26, y + 8); targetCtx.lineTo(x + 36, y - 4); targetCtx.lineTo(x + 26, y + 10); targetCtx.fill();
+                    
+                    targetCtx.strokeStyle = '#1a1a1a';
+                    targetCtx.lineWidth = 2.5;
+                    targetCtx.beginPath(); targetCtx.moveTo(x + 2, y + 36); targetCtx.quadraticCurveTo(x - 12, y + 28, x - 10, y + 20); targetCtx.stroke();
+                    targetCtx.fillStyle = '#1a1a1a';
+                    targetCtx.beginPath(); targetCtx.moveTo(x - 10, y + 20); targetCtx.lineTo(x - 16, y + 22); targetCtx.lineTo(x - 8, y + 14); targetCtx.closePath(); targetCtx.fill();
+
+                    targetCtx.fillStyle = '#ff4081';
+                    targetCtx.font = '10px Arial';
+                    targetCtx.fillText('💀', x + 12, y + 18);
+
+                } else if (skin === 'skin3') {
+                    targetCtx.fillStyle = '#ffd700'; targetCtx.strokeStyle = '#ffb300'; targetCtx.lineWidth = 1;
+                    targetCtx.beginPath();
+                    targetCtx.moveTo(x + 8, y + 6); targetCtx.lineTo(x + 4, y - 7); targetCtx.lineTo(x + 17, y - 1); targetCtx.lineTo(x + 17, y - 11); targetCtx.lineTo(x + 17, y - 1); targetCtx.lineTo(x + 30, y - 7); targetCtx.lineTo(x + 26, y + 6);
+                    targetCtx.closePath(); targetCtx.fill(); targetCtx.stroke();
+                    targetCtx.fillStyle = '#d50000';
+                    targetCtx.beginPath(); targetCtx.arc(x + 4, y - 7, 1.5, 0, 2 * Math.PI); targetCtx.fill();
+                    targetCtx.beginPath(); targetCtx.arc(x + 17, y - 11, 1.5, 0, 2 * Math.PI); targetCtx.fill();
+                    targetCtx.beginPath(); targetCtx.arc(x + 30, y - 7, 1.5, 0, 2 * Math.PI); targetCtx.fill();
+                }
             }
 
             targetCtx.fillStyle = bowColor;
             targetCtx.font = 'bold 18px Arial';
-            targetCtx.fillText('🎀', x + 26, y + 14);
+            targetCtx.fillText('🎀', x + 25, y + 14);
         }
 
         const kitty = {
@@ -510,7 +519,7 @@
             width: 35,
             height: 45,
             dy: 0,
-            gravity: 0.68,       // Gravedad compensada para la velocidad 10
+            gravity: 0.68,       
             jumpPower: -13.0, 
             grounded: true,
 
@@ -545,7 +554,6 @@
 
         function handleObstacles() {
             framesSinceLastObstacle++;
-            // El spawn se auto-ajusta a la velocidad frenética para que no se amontonen de forma imposible
             let spawnInterval = Math.max(40, 85 - (gameSpeed - baseSpeed) * 4);
 
             if (framesSinceLastObstacle > spawnInterval && Math.random() < 0.05) {
@@ -610,7 +618,6 @@
                 return;
             }
 
-            // --- ACELERACIÓN CADA 15 PUNTOS CON TOPE EN 30 ---
             let puntosActuales = Math.floor(score);
             let currentLevel = Math.floor(puntosActuales / 15); 
             if (currentLevel > lastLevel) {
@@ -620,7 +627,7 @@
                     gameSpeed = nuevaVelocidad;
                     scoreSpeed = baseScoreSpeed * Math.pow(1.02, lastLevel);
                 } else {
-                    gameSpeed = maxSpeed; // Bloqueo estricto a 30
+                    gameSpeed = maxSpeed; 
                     scoreSpeed = baseScoreSpeed * (maxSpeed / baseSpeed);
                 }
             }
@@ -633,9 +640,9 @@
             requestAnimationFrame(animar);
         }
 
-        // --- SISTEMA LOGROS DE UN SOLO INTENTO (ESTILO LOL) ---
+        // --- SISTEMA LOGROS ---
         function actualizarPantallaLogros() {
-            let r = highScore; // Record max de una partida
+            let r = highScore; 
             evaluarMedala(r >= 100, 'm-plastic');
             evaluarMedala(r >= 200, 'm-wood');
             evaluarMedala(r >= 400, 'm-bronze');
@@ -657,9 +664,9 @@
             const c1 = document.getElementById('previewSkin1'); const c2 = document.getElementById('previewSkin2'); const c3 = document.getElementById('previewSkin3');
             const cx1 = c1.getContext('2d'); const cx2 = c2.getContext('2d'); const cx3 = c3.getContext('2d');
             cx1.clearRect(0, 0, 60, 50); cx2.clearRect(0, 0, 60, 50); cx3.clearRect(0, 0, 60, 50);
-            renderPersonaje(cx1, 12, 2, 'skin1', activeBowColor);
-            renderPersonaje(cx2, 12, 2, 'skin2', activeBowColor);
-            renderPersonaje(cx3, 12, 2, 'skin3', activeBowColor);
+            renderPersonaje(cx1, 12, 4, 'skin1', activeBowColor);
+            renderPersonaje(cx2, 12, 4, 'skin2', activeBowColor);
+            renderPersonaje(cx3, 12, 4, 'skin3', activeBowColor);
         }
 
         function actualizarVisualTienda() {
@@ -707,17 +714,19 @@
         document.getElementById('dot-yellow').addEventListener('click', () => manejarCompraLazo('#fdd835'));
         document.getElementById('dot-green').addEventListener('click', () => manejarCompraLazo('#66bb6a'));
 
-        // --- COMPORTAMIENTO BOTONES ---
+        // --- NAVEGACIÓN ---
         openShopBtn.addEventListener('click', () => {
             juegoPausado = true; startScreen.style.display = 'none'; leaderboardScreen.style.display = 'none'; medalsScreen.style.display = 'none'; restartBtn.style.display = 'none'; continueBtn.style.display = 'none';
             shopScreen.style.display = 'flex'; actualizarVisualTienda();
         });
         closeShopBtn.addEventListener('click', () => { shopScreen.style.display = 'none'; startScreen.style.display = 'flex'; });
 
-        openMedalsBtn.addEventListener('click', () => {
+        const irALogros = () => {
             juegoPausado = true; startScreen.style.display = 'none'; leaderboardScreen.style.display = 'none'; shopScreen.style.display = 'none'; restartBtn.style.display = 'none'; continueBtn.style.display = 'none';
             medalsScreen.style.display = 'flex'; actualizarPantallaLogros();
-        });
+        };
+        openMedalsBtn.addEventListener('click', irALogros);
+        showMedalsMenuBtn.addEventListener('click', irALogros);
         closeMedalsBtn.addEventListener('click', () => { medalsScreen.style.display = 'none'; startScreen.style.display = 'flex'; });
 
         menuBtn.addEventListener('click', () => {
