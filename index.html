@@ -2,68 +2,108 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello Kitty Run - Multiplayer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none, viewport-fit=cover">
+    <title>Hello Kitty Run - Mobile Edition</title>
     <style>
-        body {
+        /* Forzar que el cuerpo ocupe toda la pantalla y no tenga barras de scroll */
+        html, body {
+            width: 100%;
+            height: 100%;
             margin: 0;
             padding: 0;
             background-color: #fce4ec;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+            user-select: none;
+            -webkit-user-select: none;
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-family: 'Courier New', Courier, monospace;
-            overflow: hidden;
-            user-select: none;
+            justify-content: center;
+        }
+
+        /* Si el móvil está en vertical, avisamos al usuario de que lo gire */
+        @media screen and (orientation: portrait) {
+            #orientationWarning {
+                display: flex !important;
+            }
+            #gameWrapper {
+                display: none !important;
+            }
+        }
+
+        #orientationWarning {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #fce4ec;
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #d81b60;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #orientationWarning h2 { margin-bottom: 10px; }
+
+        /* Contenedor adaptativo para que en pantallas horizontales use el ratio correcto */
+        #gameWrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+            max-width: 900px;
+            max-height: 450px;
+            position: relative;
+            box-sizing: border-box;
+            padding: 10px;
         }
         
-        h1 {
+        .score-board {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
             color: #d81b60;
-            margin-top: 20px;
-            margin-bottom: 0;
+            margin-bottom: 5px;
+            z-index: 5;
+        }
+
+        #menuBtn {
+            background-color: #f06292;
+            color: white;
+            border: 2px solid #d81b60;
+            border-radius: 5px;
+            padding: 2px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
         }
 
         #gameContainer {
             position: relative;
-            margin-top: 20px;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
         }
 
         #gameCanvas {
             background-color: #ffffff;
             border: 2px solid #f48fb1;
             border-radius: 10px;
-            box-shadow: 0 8px 16px rgba(233, 30, 99, 0.2);
+            box-shadow: 0 6px 12px rgba(233, 30, 99, 0.2);
             outline: none;
-            cursor: pointer;
-        }
-
-        .score-board {
-            display: flex;
-            width: 800px;
-            justify-content: space-between;
-            margin-top: 10px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #d81b60;
-            position: relative;
-        }
-
-        /* BOTÓN DE MENÚ ARRIBA A LA DERECHA */
-        #menuBtn {
-            background-color: #f06292;
-            color: white;
-            border: 2px solid #d81b60;
-            border-radius: 5px;
-            padding: 2px 10px;
-            font-size: 16px;
-            cursor: pointer;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        #menuBtn:hover {
-            background-color: #e91e63;
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         .game-btn {
@@ -72,8 +112,8 @@
             top: 60%;
             left: 50%;
             transform: translate(-50%, -50%);
-            padding: 15px 30px;
-            font-size: 20px;
+            padding: 12px 24px;
+            font-size: 18px;
             font-family: 'Courier New', Courier, monospace;
             font-weight: bold;
             background-color: #f06292;
@@ -82,19 +122,15 @@
             border-radius: 8px;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            z-index: 10;
-        }
-
-        .game-btn:hover {
-            background-color: #e91e63;
+            z-index: 30;
         }
 
         .overlay-screen {
             position: absolute;
             top: 0;
             left: 0;
-            width: 800px;
-            height: 300px;
+            width: 100%;
+            height: 100%;
             background-color: rgba(252, 228, 236, 0.95);
             display: flex;
             flex-direction: column;
@@ -102,22 +138,27 @@
             justify-content: center;
             border-radius: 10px;
             z-index: 20;
+            box-sizing: border-box;
+            padding: 20px;
         }
 
         .overlay-screen h2 {
             color: #d81b60;
-            margin-bottom: 20px;
+            margin: 0 0 15px 0;
+            font-size: 22px;
         }
 
         .overlay-screen input {
             padding: 10px;
-            font-size: 18px;
+            font-size: 16px;
             border: 2px solid #f48fb1;
             border-radius: 5px;
             text-align: center;
             outline: none;
             font-family: 'Courier New', Courier, monospace;
             margin-bottom: 15px;
+            width: 60%;
+            max-width: 250px;
         }
 
         .btn-visible {
@@ -126,85 +167,68 @@
             transform: none;
             top: auto;
             left: auto;
-            margin: 10px;
+            margin: 5px;
         }
         
         #leaderboardList {
-            font-size: 18px;
+            font-size: 16px;
             color: #ad1457;
             text-align: left;
-            width: 60%;
-            max-height: 150px;
+            width: 70%;
+            max-height: 130px;
             overflow-y: auto;
             margin-bottom: 15px;
         }
 
         #leaderboardList li {
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             border-bottom: 1px dashed #f48fb1;
-            padding-bottom: 5px;
-        }
-        
-        .instructions {
-            margin-top: 15px;
-            color: #ad1457;
-            font-size: 16px;
-            text-align: center;
-            line-height: 1.5;
-        }
-        
-        .key-btn {
-            background-color: #f8bbd0;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-weight: bold;
-            border: 1px solid #d81b60;
+            padding-bottom: 2px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Hello Kitty Run 🎀</h1>
-
-    <div class="score-board">
-        <div>RÉCORD LOCAL: <span id="highScore">0</span></div>
-        <div><button id="menuBtn">🏠 Menú Principal</button></div>
-        <div>PUNTOS: <span id="score">0</span></div>
+    <div id="orientationWarning">
+        <h2>🎀 Hello Kitty Run 🎀</h2>
+        <p>Por favor, gira tu dispositivo en horizontal para jugar.</p>
+        <span style="font-size: 50px;">🔄</span>
     </div>
 
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="800" height="300"></canvas>
-        
-        <div id="startScreen" class="overlay-screen">
-            <h2>¡Identifícate para jugar!</h2>
-            <input type="text" id="playerName" placeholder="Tu nombre..." maxlength="12">
-            <div style="display: flex;">
-                <button id="startBtn" class="game-btn btn-visible">Jugar / Continuar</button>
-                <button id="showLeaderboardBtn" class="game-btn btn-visible" style="background-color: #ba68c8;">Ver Ranking</button>
+    <div id="gameWrapper">
+        <div class="score-board">
+            <div>RÉCORD: <span id="highScore">0</span></div>
+            <div><button id="menuBtn">🏠 Menú</button></div>
+            <div>PUNTOS: <span id="score">0</span></div>
+        </div>
+
+        <div id="gameContainer">
+            <canvas id="gameCanvas" width="800" height="300"></canvas>
+            
+            <div id="startScreen" class="overlay-screen">
+                <h2>¡Identifícate para jugar!</h2>
+                <input type="text" id="playerName" placeholder="Tu nombre..." maxlength="12">
+                <div style="display: flex;">
+                    <button id="startBtn" class="game-btn btn-visible">Jugar</button>
+                    <button id="showLeaderboardBtn" class="game-btn btn-visible" style="background-color: #ba68c8;">Ver Ranking</button>
+                </div>
             </div>
-        </div>
 
-        <div id="leaderboardScreen" class="overlay-screen" style="display: none;">
-            <h2>🏆 Top 10 Mundial 🏆</h2>
-            <div id="leaderboardList">Cargando datos...</div>
-            <button id="closeLeaderboardBtn" class="game-btn btn-visible">Volver</button>
-        </div>
+            <div id="leaderboardScreen" class="overlay-screen" style="display: none;">
+                <h2>🏆 Top 10 Mundial 🏆</h2>
+                <div id="leaderboardList">Cargando datos...</div>
+                <button id="closeLeaderboardBtn" class="game-btn btn-visible">Volver</button>
+            </div>
 
-        <button id="restartBtn" class="game-btn">Reintentar</button>
-        <button id="continueBtn" class="game-btn">Continuar</button>
-    </div>
-    
-    <div class="instructions">
-        Pulsa <span class="key-btn">ESPACIO</span> o haz <span class="key-btn">CLIC</span> para saltar.<br>
-        ¡Logro especial a los 100 puntos!
+            <button id="restartBtn" class="game-btn">Reintentar</button>
+            <button id="continueBtn" class="game-btn">Continuar</button>
+        </div>
     </div>
 
     <script type="module">
-        // 1. IMPORTACIONES DE FIREBASE
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        // 2. TUS CLAVES REALES DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyBDQmVNBkmSUvXWjR1nJlJJeibnHpmrd3Q",
             authDomain: "kittyrunner-bac9f.firebaseapp.com",
@@ -214,11 +238,9 @@
             appId: "1:525245357809:web:19d060e6fd0f4bde21d350"
         };
 
-        // Inicializamos la base de datos
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Referencias al DOM
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
@@ -235,21 +257,24 @@
         const playerNameInput = document.getElementById('playerName');
         const leaderboardList = document.getElementById('leaderboardList');
 
-        // Variables Globales
+        // Variables de lógica de juego equilibradas para movilidad fluida
         let playerName = "Anónimo";
-        let frames = 0;
         let score = 0;
         let highScore = localStorage.getItem('kittyHighScore') || 0;
         highScoreElement.innerText = highScore;
-        let gameSpeed = 4; 
+        
+        // Físicas ajustadas para velocidad ágil de inicio
+        let baseSpeed = 5.5; 
+        let gameSpeed = baseSpeed; 
+        let scoreSpeed = 0.015; // Velocidad base a la que suben los puntos
+        
         let gameOver = false;
-        let juegoPausado = true; // Empieza pausado esperando el nombre
+        let juegoPausado = true; 
         let milestoneReached = false; 
-        let animacionActiva = null;
         const groundHeight = 250;
         let framesSinceLastObstacle = 0;
+        let lastLevel = 0;
 
-        // Base de Datos: Guardar Puntuación
         async function guardarEnRanking(puntos) {
             try {
                 await addDoc(collection(db, "clasificacion"), {
@@ -257,44 +282,33 @@
                     puntuacion: puntos,
                     fecha: new Date()
                 });
-                console.log("Puntuación guardada online.");
-            } catch (e) {
-                console.error("Error al guardar en BD:", e);
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // Base de Datos: Leer Puntuaciones
         async function cargarRanking() {
             leaderboardList.innerHTML = "Cargando...";
             try {
                 const q = query(collection(db, "clasificacion"), orderBy("puntuacion", "desc"), limit(10));
                 const querySnapshot = await getDocs(q);
-                
                 let html = "<ol>";
                 querySnapshot.forEach((doc) => {
                     let datos = doc.data();
                     html += `<li><strong>${datos.nombre}</strong> - ${datos.puntuacion} pts</li>`;
                 });
                 html += "</ol>";
-                
-                if(querySnapshot.empty) {
-                    html = "Aún no hay puntuaciones. ¡Sé el primero!";
-                }
+                if(querySnapshot.empty) html = "Aún no hay puntuaciones.";
                 leaderboardList.innerHTML = html;
-            } catch (e) {
-                leaderboardList.innerHTML = "Error al cargar la tabla de clasificación.";
-            }
+            } catch (e) { leaderboardList.innerHTML = "Error al cargar la tabla."; }
         }
 
-        // Lógica del Personaje
         const kitty = {
             x: 60,
             y: 205, 
             width: 35,
             height: 45,
             dy: 0,
-            gravity: 0.6,       
-            jumpPower: -12, 
+            gravity: 0.65,       
+            jumpPower: -12.5, 
             grounded: true,
 
             dibujar: function() {
@@ -344,10 +358,11 @@
 
         function handleObstacles() {
             framesSinceLastObstacle++;
-            let safeDistance = framesSinceLastObstacle > 110;
-            let randomChance = Math.random() < 0.02; 
+            
+            // Separación dinámica: a mayor velocidad, requiere mayor separación en píxeles
+            let spawnInterval = Math.max(70, 110 - (gameSpeed - baseSpeed) * 8);
 
-            if (safeDistance && randomChance && frames > 50) {
+            if (framesSinceLastObstacle > spawnInterval && Math.random() < 0.03) {
                 let type = Math.random() > 0.4 ? 'tree' : 'icecream';
                 obstacles.push(new Obstacle(type));
                 framesSinceLastObstacle = 0; 
@@ -358,9 +373,7 @@
                 obs.update();
                 obs.draw();
 
-                let padding = 10;
-                
-                // Colisión
+                let padding = 8; // Margen de colisión justo
                 if (
                     kitty.x + padding < obs.x + obs.width &&
                     kitty.x + kitty.width - padding > obs.x &&
@@ -377,7 +390,6 @@
             }
         }
 
-        // Sistema de Saltos
         function saltar() {
             if (kitty.grounded && !gameOver && !juegoPausado && startScreen.style.display === 'none' && leaderboardScreen.style.display === 'none') {
                 kitty.dy = kitty.jumpPower;
@@ -385,20 +397,22 @@
             }
         }
 
+        // Controles unificados e instantáneos
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.key === ' ') {
-                if(startScreen.style.display === 'none' && leaderboardScreen.style.display === 'none') e.preventDefault();
+                if(startScreen.style.display === 'none') e.preventDefault();
                 saltar();
             }
         });
 
-        canvas.addEventListener('mousedown', saltar);
+        // Eventos de toque de pantalla optimizados para no causar lag táctil
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             saltar();
-        });
+        }, { passive: false });
+        canvas.addEventListener('mousedown', saltar);
 
-        // Bucle de Animación
+        // BUCLE PRINCIPAL DE ANIMACIÓN
         function animar() {
             if (juegoPausado) return;
 
@@ -413,23 +427,26 @@
                 restartBtn.style.display = 'block';
                 
                 let puntosFinales = Math.floor(score);
-                
-                // Actualizar record local
                 if (puntosFinales > highScore) {
                     highScore = puntosFinales;
                     localStorage.setItem('kittyHighScore', highScore);
                     highScoreElement.innerText = highScore;
                 }
-
-                // Guardar en Firebase automáticamente
-                if(puntosFinales > 0) {
-                    guardarEnRanking(puntosFinales);
-                }
-
+                if(puntosFinales > 0) guardarEnRanking(puntosFinales);
                 return;
             }
 
-            // Logro a los 100 puntos
+            // SISTEMA DINÁMICO DE DIFICULTAD CADA 100 PUNTOS (Tipo Google Dino)
+            let puntosActuales = Math.floor(score);
+            let currentLevel = Math.floor(puntosActuales / 100);
+            
+            if (currentLevel > lastLevel) {
+                lastLevel = currentLevel;
+                gameSpeed = baseSpeed * Math.pow(1.15, lastLevel); // Sube la velocidad un 15% por nivel
+                scoreSpeed = 0.015 * Math.pow(1.15, lastLevel);   // Los puntos suben proporcionalmente más rápido
+            }
+
+            // Logro a los 100 puntos exactos en el nivel 1
             if (score >= 100 && !milestoneReached) {
                 milestoneReached = true;
                 juegoPausado = true;
@@ -449,9 +466,9 @@
                 return; 
             }
 
-            // Dibujar entorno
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
+            // Suelo
             ctx.beginPath();
             ctx.moveTo(0, groundHeight);
             ctx.lineTo(canvas.width, groundHeight);
@@ -463,26 +480,19 @@
             kitty.dibujar();
             handleObstacles();
 
-            score += 0.01; 
+            score += scoreSpeed; 
             scoreElement.innerText = Math.floor(score);
             
-            if (frames % 1000 === 0 && gameSpeed < 8) {
-                gameSpeed += 0.2; 
-            }
-
-            frames++;
-            animacionActiva = requestAnimationFrame(animar);
+            requestAnimationFrame(animar);
         }
 
-        // --- ASIGNACIÓN DE EVENTOS A BOTONES ---
-
-        // BOTÓN MENÚ PRINCIPAL (Pausa el juego y muestra inicio)
+        // --- BOTONES ---
         menuBtn.addEventListener('click', () => {
             juegoPausado = true; 
             restartBtn.style.display = 'none';
             continueBtn.style.display = 'none';
             leaderboardScreen.style.display = 'none';
-            startScreen.style.display = 'flex'; // Abre la pantalla de identificarse
+            startScreen.style.display = 'flex';
         });
 
         restartBtn.addEventListener('click', () => {
@@ -492,15 +502,15 @@
             obstacles.length = 0;
             framesSinceLastObstacle = 0;
             score = 0;
-            frames = 0;
-            gameSpeed = 4;
+            gameSpeed = baseSpeed;
+            scoreSpeed = 0.015;
+            lastLevel = 0;
             gameOver = false;
             juegoPausado = false;
             milestoneReached = false; 
-            
             restartBtn.style.display = 'none';
             ctx.textAlign = 'left'; 
-            animacionActiva = requestAnimationFrame(animar);
+            requestAnimationFrame(animar);
         });
 
         continueBtn.addEventListener('click', () => {
@@ -508,7 +518,7 @@
             continueBtn.style.display = 'none';
             obstacles.length = 0; 
             framesSinceLastObstacle = 0;
-            animacionActiva = requestAnimationFrame(animar);
+            requestAnimationFrame(animar);
         });
 
         startBtn.addEventListener('click', () => {
@@ -516,17 +526,13 @@
             if(nombreReg.length > 0) {
                 playerName = nombreReg;
                 startScreen.style.display = 'none';
-                juegoPausado = false; // Quita la pausa
-                
-                // Si la partida ya había terminado en Game Over, forzamos un reinicio limpio
+                juegoPausado = false;
                 if (gameOver) {
                     restartBtn.click();
                 } else {
-                    animacionActiva = requestAnimationFrame(animar);
+                    requestAnimationFrame(animar);
                 }
-            } else {
-                alert("¡Por favor, escribe un nombre para poder jugar y registrar tus récords!");
-            }
+            } else { alert("¡Por favor, escribe tu nombre!"); }
         });
 
         showLeaderboardBtn.addEventListener('click', () => {
@@ -540,7 +546,7 @@
             startScreen.style.display = 'flex';
         });
 
-        // Dibujar el estado inicial (el suelo y Kitty parados de fondo mientras te registras)
+        // Renderizado estático inicial de fondo
         ctx.beginPath();
         ctx.moveTo(0, groundHeight);
         ctx.lineTo(canvas.width, groundHeight);
@@ -548,7 +554,6 @@
         ctx.lineWidth = 4;
         ctx.stroke();
         kitty.dibujar();
-
     </script>
 </body>
 </html>
